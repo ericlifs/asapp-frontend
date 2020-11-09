@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { useDebounce } from '../../hooks';
 import './index.scss';
 
@@ -10,11 +10,16 @@ interface DropdownProps {
 
 const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
   const [term, setTerm] = useState<string>('');
+  const [focused, setFocused] = useState<boolean>(false);
   const debouncedTerm = useDebounce<string>(term, 600);
 
   const onInputValueChange = (ev: ChangeEvent<HTMLInputElement>) => {
     setTerm(ev.target.value);
   };
+
+  const showSuggestions = useMemo(() => {
+    return props.isFetching && focused;
+  }, [props.isFetching, focused]);
 
   useEffect(() => {
     if (debouncedTerm.trim()) {
@@ -29,8 +34,12 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
         placeholder={props.placeholder}
         value={term}
         onChange={onInputValueChange}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
       />
-      {props.isFetching && <h1>Loading</h1>}
+      {showSuggestions && (
+        <div className="dropdown__suggestions">{props.isFetching && <h1>Loading</h1>}</div>
+      )}
     </div>
   );
 };
