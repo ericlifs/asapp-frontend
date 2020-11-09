@@ -20,7 +20,7 @@ module.exports = {
   },
   plugins: ['react', '@typescript-eslint'],
   rules: {
-    'react-hooks/exhaustive-deps': 'error',
+    'react-hooks/exhaustive-deps': 'off',
     'no-var': 'error',
     'brace-style': 'error',
     'prefer-template': 'error',
