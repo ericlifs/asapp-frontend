@@ -1,11 +1,17 @@
-import React from 'react';
-import api from './api';
-import API_CONFIG from './api/config';
+import React, { useContext, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { CitiesStore } from './stores';
 import Dropdown from './ui/Dropdown';
 
 function App() {
-  const onDropdownInputChange = (term: string) => {
-    api.get(API_CONFIG.ENDPOINTS.CITIES, { filter: term, offset: 0, limit: 20 });
+  const citiesStore = useContext(CitiesStore);
+
+  useEffect(() => {
+    citiesStore.getAllCities();
+  }, []);
+
+  const onDropdownInputChange = async (term: string): Promise<void> => {
+    citiesStore.getCitiesByFilter(term);
   };
 
   return (
@@ -13,9 +19,10 @@ function App() {
       <Dropdown
         placeholder="Type to filter by city name or country"
         onInputChange={onDropdownInputChange}
+        isFetching={citiesStore.isFetching}
       />
     </div>
   );
 }
 
-export default App;
+export default observer(App);

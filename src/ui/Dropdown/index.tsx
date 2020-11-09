@@ -4,6 +4,7 @@ import './index.scss';
 
 interface DropdownProps {
   placeholder: string;
+  isFetching: boolean;
   onInputChange: (value: string) => void | Promise<void>;
 }
 
@@ -29,6 +30,7 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
         value={term}
         onChange={onInputValueChange}
       />
+      {props.isFetching && <h1>Loading</h1>}
     </div>
   );
 };
