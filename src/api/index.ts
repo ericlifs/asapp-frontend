@@ -13,7 +13,7 @@ class Api {
     const res = await fetch(`${CONFIG.API_BASE_PATH}/${endpoint}${stringifyParams(params)}`);
     const jsonRes = await res.json();
 
-    return jsonRes.data as T;
+    return jsonRes as T;
   }
 }
 
