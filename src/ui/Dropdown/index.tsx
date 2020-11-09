@@ -3,6 +3,7 @@ import './index.scss';
 
 interface DropdownProps {
   placeholder: string;
+  onInputChange: (value: string) => void | Promise<void>;
 }
 
 const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
@@ -10,6 +11,7 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
 
   const onInputValueChange = (ev: ChangeEvent<HTMLInputElement>) => {
     setTerm(ev.target.value);
+    props.onInputChange(ev.target.value);
   };
 
   return (

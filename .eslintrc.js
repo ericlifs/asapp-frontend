@@ -27,6 +27,7 @@ module.exports = {
     radix: 'error',
     'space-before-blocks': 'error',
     'import/prefer-default-export': 'off',
+    'no-unused-vars': 'off',
   },
   overrides: [
     {
