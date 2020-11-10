@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 enum FetchStatus {
   Initial,
   Fetching,

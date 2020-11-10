@@ -1,10 +1,14 @@
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useDebounce } from '../../hooks';
 import './index.scss';
 
 interface DropdownProps {
   placeholder: string;
   isFetching: boolean;
+  suggestions: any[];
+  renderItem: (item: any) => JSX.Element;
   onInputChange: (value: string) => void | Promise<void>;
 }
 
@@ -16,10 +20,6 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
   const onInputValueChange = (ev: ChangeEvent<HTMLInputElement>) => {
     setTerm(ev.target.value);
   };
-
-  const showSuggestions = useMemo(() => {
-    return props.isFetching && focused;
-  }, [props.isFetching, focused]);
 
   useEffect(() => {
     if (debouncedTerm.trim()) {
@@ -37,8 +37,11 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       />
-      {showSuggestions && (
-        <div className="dropdown__suggestions">{props.isFetching && <h1>Loading</h1>}</div>
+      {focused && (
+        <div className="dropdown__suggestions">
+          {props.isFetching && <h1>Loading</h1>}
+          {props.suggestions.length > 0 && props.suggestions.map(props.renderItem)}
+        </div>
       )}
     </div>
   );

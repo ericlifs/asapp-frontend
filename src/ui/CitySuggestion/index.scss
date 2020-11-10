@@ -1,0 +1,22 @@
+.city-suggestion {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+
+  &:not(:last-child) {
+    padding-bottom: 20px;
+  }
+
+  &__row {
+    display: flex;
+  }
+
+  &__subcountry {
+    margin-left: 5px;
+
+    &::before {
+      content: '-';
+      margin-right: 5px;
+    }
+  }
+}
