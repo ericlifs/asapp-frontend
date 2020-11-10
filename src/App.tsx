@@ -16,6 +16,10 @@ function App() {
     citiesStore.getCitiesByFilter(term);
   };
 
+  const onDropdownEndReached = async (): Promise<void> => {
+    citiesStore.getAllCities();
+  };
+
   return (
     <div className="App">
       <Dropdown
@@ -24,6 +28,7 @@ function App() {
         suggestions={citiesStore.allCities}
         isFetching={citiesStore.isFetching}
         renderItem={(item: CityInfo) => <CitySuggestion city={item} />}
+        onEndReached={onDropdownEndReached}
       />
     </div>
   );

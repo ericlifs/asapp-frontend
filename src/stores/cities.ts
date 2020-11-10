@@ -13,6 +13,8 @@ class CitiesStore {
 
   public allCities: CityInfo[] = [];
 
+  public allCitiesPage: number = 0;
+
   @computed public get isFetching() {
     return this.fetchAllCitiesStatus === FetchStatus.Fetching;
   }
@@ -20,7 +22,7 @@ class CitiesStore {
   protected async fetchCitiesByTerm(filter = '', offset = 0): Promise<CitiesResponse> {
     return api.get<CitiesResponse>(API_CONFIG.ENDPOINTS.CITIES, {
       filter,
-      offset,
+      offset: offset * 20,
       limit: 20,
     });
   }
@@ -33,10 +35,11 @@ class CitiesStore {
     this.fetchAllCitiesStatus = FetchStatus.Fetching;
 
     try {
-      const res = await this.fetchCitiesByTerm();
+      const res = await this.fetchCitiesByTerm('', this.allCitiesPage);
 
-      this.allCities = res.data;
+      this.allCities = [...this.allCities, ...res.data];
       this.fetchAllCitiesStatus = FetchStatus.Fetched;
+      this.allCitiesPage += 1;
     } catch (err) {
       this.fetchAllCitiesStatus = FetchStatus.Error;
     }
