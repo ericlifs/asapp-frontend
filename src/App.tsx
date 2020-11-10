@@ -17,7 +17,7 @@ function App() {
   };
 
   const onDropdownEndReached = async (): Promise<void> => {
-    citiesStore.getAllCities();
+    citiesStore.getMoreCities();
   };
 
   return (
@@ -25,9 +25,9 @@ function App() {
       <Dropdown
         placeholder="Type to filter by city name or country"
         onInputChange={onDropdownInputChange}
-        suggestions={citiesStore.allCities}
+        suggestions={citiesStore.currentCitiesList}
         isFetching={citiesStore.isFetching}
-        renderItem={(item: CityInfo) => <CitySuggestion city={item} />}
+        renderItem={(item: CityInfo) => <CitySuggestion key={item.geonameid} city={item} />}
         onEndReached={onDropdownEndReached}
       />
     </div>

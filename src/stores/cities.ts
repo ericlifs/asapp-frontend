@@ -13,7 +13,21 @@ class CitiesStore {
 
   public allCities: CityInfo[] = [];
 
-  public allCitiesPage: number = 0;
+  public filteredCities: CityInfo[] = [];
+
+  public currentFilter: string = '';
+
+  protected allCitiesPage: number = 0;
+
+  protected filteredCitiesPage: number = 0;
+
+  @computed public get currentCitiesList() {
+    if (this.currentFilter !== '') {
+      return this.filteredCities;
+    }
+
+    return this.allCities;
+  }
 
   @computed public get isFetching() {
     return this.fetchAllCitiesStatus === FetchStatus.Fetching;
@@ -27,8 +41,30 @@ class CitiesStore {
     });
   }
 
+  @action protected resetFilter(filter: string): void {
+    this.filteredCities = [];
+    this.currentFilter = filter;
+    this.filteredCitiesPage = 0;
+  }
+
   @action public async getCitiesByFilter(filter: string) {
-    await this.fetchCitiesByTerm(filter);
+    if (filter !== this.currentFilter) {
+      this.resetFilter(filter);
+    }
+
+    if (filter) {
+      this.fetchAllCitiesStatus = FetchStatus.Fetching;
+
+      try {
+        const res = await this.fetchCitiesByTerm(filter, this.filteredCitiesPage);
+
+        this.filteredCities = [...this.filteredCities, ...res.data];
+        this.fetchAllCitiesStatus = FetchStatus.Fetched;
+        this.filteredCitiesPage += 1;
+      } catch (err) {
+        this.fetchAllCitiesStatus = FetchStatus.Error;
+      }
+    }
   }
 
   @action public async getAllCities() {
@@ -43,6 +79,14 @@ class CitiesStore {
     } catch (err) {
       this.fetchAllCitiesStatus = FetchStatus.Error;
     }
+  }
+
+  public getMoreCities() {
+    if (this.currentFilter) {
+      return this.getCitiesByFilter(this.currentFilter);
+    }
+
+    this.getAllCities();
   }
 }
 

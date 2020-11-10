@@ -26,9 +26,7 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
   };
 
   useEffect(() => {
-    if (debouncedTerm.trim()) {
-      props.onInputChange(debouncedTerm.trim());
-    }
+    props.onInputChange(debouncedTerm.trim());
   }, [debouncedTerm]);
 
   useEffect(() => {
