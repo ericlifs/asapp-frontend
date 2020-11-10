@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useDebounce, usePercentageScrolled } from '../../hooks';
+import Loading from '../Loading';
 import './index.scss';
 
 interface DropdownProps {
@@ -48,7 +49,7 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
       />
       <div className={`dropdown__suggestions ${focused ? 'shown' : ''}`} ref={suggestionsRef}>
         {props.suggestions.length > 0 && props.suggestions.map(props.renderItem)}
-        {props.isFetching && <h1>Loading</h1>}
+        {props.isFetching && <Loading />}
       </div>
     </div>
   );
