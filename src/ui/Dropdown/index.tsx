@@ -30,7 +30,7 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
   }, [debouncedTerm]);
 
   useEffect(() => {
-    if (percentageScrolled === 100 && props.onEndReached) {
+    if (percentageScrolled === 100 && !props.isFetching && props.onEndReached) {
       props.onEndReached();
     }
   }, [percentageScrolled]);
