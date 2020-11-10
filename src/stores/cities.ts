@@ -9,7 +9,7 @@ class CitiesStore {
     makeAutoObservable(this);
   }
 
-  public fetchAllCitiesStatus = FetchStatus.Initial;
+  public fetchStatus = FetchStatus.Initial;
 
   public allCities: CityInfo[] = [];
 
@@ -30,7 +30,7 @@ class CitiesStore {
   }
 
   @computed public get isFetching() {
-    return this.fetchAllCitiesStatus === FetchStatus.Fetching;
+    return this.fetchStatus === FetchStatus.Fetching;
   }
 
   protected async fetchCitiesByTerm(filter = '', offset = 0): Promise<CitiesResponse> {
@@ -53,31 +53,31 @@ class CitiesStore {
     }
 
     if (filter) {
-      this.fetchAllCitiesStatus = FetchStatus.Fetching;
+      this.fetchStatus = FetchStatus.Fetching;
 
       try {
         const res = await this.fetchCitiesByTerm(filter, this.filteredCitiesPage);
 
         this.filteredCities = [...this.filteredCities, ...res.data];
-        this.fetchAllCitiesStatus = FetchStatus.Fetched;
+        this.fetchStatus = FetchStatus.Fetched;
         this.filteredCitiesPage += 1;
       } catch (err) {
-        this.fetchAllCitiesStatus = FetchStatus.Error;
+        this.fetchStatus = FetchStatus.Error;
       }
     }
   }
 
   @action public async getAllCities() {
-    this.fetchAllCitiesStatus = FetchStatus.Fetching;
+    this.fetchStatus = FetchStatus.Fetching;
 
     try {
       const res = await this.fetchCitiesByTerm('', this.allCitiesPage);
 
       this.allCities = [...this.allCities, ...res.data];
-      this.fetchAllCitiesStatus = FetchStatus.Fetched;
+      this.fetchStatus = FetchStatus.Fetched;
       this.allCitiesPage += 1;
     } catch (err) {
-      this.fetchAllCitiesStatus = FetchStatus.Error;
+      this.fetchStatus = FetchStatus.Error;
     }
   }
 
