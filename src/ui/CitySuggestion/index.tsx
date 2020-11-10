@@ -17,6 +17,7 @@ const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProp
         <h3>{props.city.country}</h3>
         <h3 className="city-suggestion__subcountry">{props.city.subcountry}</h3>
       </div>
+      <button className="city-suggestion__button">Remove</button>
     </div>
   );
 };

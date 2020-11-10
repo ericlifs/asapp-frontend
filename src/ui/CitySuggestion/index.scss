@@ -2,13 +2,15 @@
   display: flex;
   width: 100%;
   flex-direction: column;
+  position: relative;
 
   &:not(:last-child) {
-    padding-bottom: 20px;
+    margin-bottom: 20px;
   }
 
   &__row {
     display: flex;
+    padding-right: 84px;
   }
 
   &__subcountry {
@@ -21,5 +23,20 @@
       content: '-';
       margin-right: 5px;
     }
+  }
+
+  &__button {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1dd1a1;
+    border: 0;
+    padding: 7px;
+    border-radius: 4px;
+    color: white;
+    box-shadow: 3px 3px black;
+    font-weight: bold;
+    font-size: 1rem;
   }
 }
