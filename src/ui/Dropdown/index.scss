@@ -12,13 +12,18 @@
 
   &__suggestions {
     position: absolute;
-    border: 2px solid gray;
+    border: 3px solid black;
     top: calc(100% + 20px);
     left: 0;
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 20px;
+    flex-direction: column;
+    max-height: 250px;
+    overflow-y: scroll;
+    background-color: white;
+    box-shadow: 6px 6px 0px 0px black;
   }
 }
