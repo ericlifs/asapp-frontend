@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useDebounce, usePercentageScrolled } from '../../hooks';
 import Loading from '../Loading';
 import './index.scss';
@@ -9,6 +9,7 @@ interface DropdownProps {
   placeholder: string;
   isFetching: boolean;
   suggestions: any[];
+  error: string;
   renderItem: (item: any) => JSX.Element;
   onInputChange: (value: string) => void | Promise<void>;
   onEndReached?: () => void | Promise<void>;
@@ -35,6 +36,21 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
     }
   }, [percentageScrolled]);
 
+  const errorContent = useMemo(() => {
+    if (props.error !== '') {
+      return (
+        <>
+          <h2 className="dropdown__error">Oops... {props.error}</h2>
+          <h1 className="dropdown__retry" onClick={props.onEndReached}>
+            Retry
+          </h1>
+        </>
+      );
+    }
+
+    return null;
+  }, [props.error]);
+
   return (
     <div className="dropdown">
       <input
@@ -45,12 +61,13 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       />
-      <div className={`dropdown__suggestions ${focused ? 'shown' : ''}`} ref={suggestionsRef}>
+      <div className={`dropdown__suggestions ${focused ? 'shown' : 'shown'}`} ref={suggestionsRef}>
         {props.suggestions.length > 0 && props.suggestions.map(props.renderItem)}
         {props.isFetching && <Loading />}
+        {errorContent}
       </div>
     </div>
   );
 };
 
-export default Dropdown;
+export default React.memo(Dropdown);

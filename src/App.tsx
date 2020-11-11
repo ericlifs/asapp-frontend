@@ -35,6 +35,7 @@ function App() {
         <Dropdown
           placeholder="Type to filter by city name or country"
           onInputChange={onDropdownInputChange}
+          error={citiesStore.error}
           suggestions={citiesStore.currentCitiesList}
           isFetching={citiesStore.isFetching}
           renderItem={(item: CityInfo) => <CitySuggestion key={item.geonameid} city={item} />}

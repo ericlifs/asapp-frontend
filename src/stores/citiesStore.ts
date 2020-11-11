@@ -1,8 +1,8 @@
+import { action, computed, makeAutoObservable } from 'mobx';
 import { createContext } from 'react';
-import { makeAutoObservable, action, computed } from 'mobx';
 import api from '../api';
-import { CitiesResponse, CityInfo, FetchStatus } from '../interfaces';
 import API_CONFIG from '../api/config';
+import { CitiesResponse, CityInfo, FetchStatus } from '../interfaces';
 
 class CitiesStore {
   constructor() {
@@ -16,6 +16,8 @@ class CitiesStore {
   public filteredCities: CityInfo[] = [];
 
   public currentFilter: string = '';
+
+  public error: string = '';
 
   protected allCitiesPage: number = 0;
 
@@ -48,6 +50,8 @@ class CitiesStore {
   }
 
   @action public async getCitiesByFilter(filter: string) {
+    this.error = '';
+
     if (filter !== this.currentFilter) {
       this.resetFilter(filter);
     }
@@ -62,6 +66,7 @@ class CitiesStore {
         this.fetchStatus = FetchStatus.Fetched;
         this.filteredCitiesPage += 1;
       } catch (err) {
+        this.error = err.message;
         this.fetchStatus = FetchStatus.Error;
       }
     }
@@ -69,6 +74,7 @@ class CitiesStore {
 
   @action public async getAllCities() {
     this.fetchStatus = FetchStatus.Fetching;
+    this.error = '';
 
     try {
       const res = await this.fetchCitiesByTerm('', this.allCitiesPage);
@@ -77,6 +83,7 @@ class CitiesStore {
       this.fetchStatus = FetchStatus.Fetched;
       this.allCitiesPage += 1;
     } catch (err) {
+      this.error = err.message;
       this.fetchStatus = FetchStatus.Error;
     }
   }
