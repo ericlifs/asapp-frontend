@@ -38,5 +38,9 @@
     box-shadow: 3px 3px black;
     font-weight: bold;
     font-size: 1rem;
+
+    &.red {
+      background-color: #ee5253;
+    }
   }
 }
