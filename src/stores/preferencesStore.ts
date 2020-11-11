@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { action, makeAutoObservable } from 'mobx';
+import { action, computed, makeAutoObservable } from 'mobx';
 import { createContext } from 'react';
 import { CityInfo, Favorites } from '../interfaces';
 
@@ -9,6 +9,11 @@ class PreferencesStore {
   }
 
   public favorites: Favorites = {};
+
+  @computed
+  public get activeFavorites() {
+    return Object.values(this.favorites).filter(Boolean);
+  }
 
   /**
    * Adds or removes city from favorites lists

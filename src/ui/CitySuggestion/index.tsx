@@ -39,10 +39,10 @@ const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProp
   return (
     <div className="city-suggestion" key={props.city.geonameid}>
       <div className="city-suggestion__row">
-        <h2>{props.city.name}</h2>
+        <h2 className="city-suggestion__name">{props.city.name}</h2>
       </div>
       <div className="city-suggestion__row">
-        <h3>{props.city.country}</h3>
+        <h3 className="city-suggestion__country">{props.city.country}</h3>
         <h3 className="city-suggestion__subcountry">{props.city.subcountry}</h3>
       </div>
       <button className={`city-suggestion__button ${buttonClass}`} onClick={onButtonClicked}>

@@ -43,4 +43,19 @@
       background-color: #ee5253;
     }
   }
+
+  &__name {
+    font-size: 1rem;
+  }
+
+  &__country,
+  &__subcountry {
+    font-size: 0.8rem;
+  }
+
+  &__name,
+  &__country,
+  &__subcountry {
+    white-space: nowrap;
+  }
 }
