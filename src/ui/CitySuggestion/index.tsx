@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
+import { CityInfo } from 'interfaces';
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useMemo } from 'react';
-import { CityInfo } from '../../interfaces';
-import { PreferencesStore } from '../../stores';
+import { PreferencesStore } from 'stores';
 import './index.scss';
 
 interface CitySuggestionProps {

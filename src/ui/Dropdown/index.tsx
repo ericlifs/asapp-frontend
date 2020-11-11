@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
+import { useDebounce, usePercentageScrolled } from 'hooks';
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { useDebounce, usePercentageScrolled } from '../../hooks';
 import Loading from '../Loading';
 import './index.scss';
 

@@ -1,5 +1,5 @@
+import loading from 'assets/loading.gif';
 import React from 'react';
-import loading from '../../assets/loading.gif';
 
 const Loading: React.FC = () => <img src={loading} />;
 

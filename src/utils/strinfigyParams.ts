@@ -1,4 +1,4 @@
-import { QueryParams } from '../interfaces';
+import { QueryParams } from 'interfaces';
 
 /**
  * Generates a new query parameters string ready to be used on an api request.

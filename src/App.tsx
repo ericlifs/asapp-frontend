@@ -1,10 +1,8 @@
+import { CityInfo } from 'interfaces';
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect } from 'react';
-import { CityInfo } from './interfaces';
-import { CitiesStore, PreferencesStore } from './stores';
-import CitySuggestion from './ui/CitySuggestion';
-import Dropdown from './ui/Dropdown';
-import Favorites from './ui/Favorites';
+import { CitiesStore, PreferencesStore } from 'stores';
+import { CitySuggestion, Dropdown, Favorites } from 'ui';
 
 function App() {
   const citiesStore = useContext(CitiesStore);

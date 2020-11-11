@@ -1,5 +1,5 @@
-import { QueryParams } from '../interfaces';
-import { stringifyParams } from '../utils';
+import { QueryParams } from 'interfaces';
+import { stringifyParams } from 'utils';
 import CONFIG from './config';
 
 class Api {
