@@ -44,12 +44,12 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
   }, [percentageScrolled, props.endReached]);
 
   const SuggestionsContent = useMemo(() => {
-    if (props.suggestions.length === 0 && !props.isFetching) {
+    if (props.suggestions.length === 0 && !props.isFetching && !props.error) {
       return <ErrorMessage error={'No results'} action="Clear filter" onClick={clearFilter} />;
     }
 
     return props.suggestions.map(props.renderItem);
-  }, [props.suggestions, props.isFetching, props.renderItem]);
+  }, [props.suggestions, props.isFetching, props.renderItem, props.error]);
 
   const ErrorContent = useMemo(() => {
     return <ErrorMessage error={props.error} action="Retry" onClick={props.onEndReached} />;
