@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 import { useDebounce, usePercentageScrolled } from 'hooks';
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
+import ErrorMessage from 'ui/ErrorMessage';
 import Loading from '../Loading';
 import './index.scss';
 
@@ -27,6 +28,11 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
     setTerm(ev.target.value);
   };
 
+  const clearFilter = () => {
+    setTerm('');
+    props.onInputChange('');
+  };
+
   useEffect(() => {
     props.onInputChange(debouncedTerm.trim());
   }, [debouncedTerm]);
@@ -37,20 +43,17 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
     }
   }, [percentageScrolled, props.endReached]);
 
-  const errorContent = useMemo(() => {
-    if (props.error !== '') {
-      return (
-        <>
-          <h2 className="dropdown__error">Oops... {props.error}</h2>
-          <h1 className="dropdown__retry" onClick={props.onEndReached}>
-            Retry
-          </h1>
-        </>
-      );
+  const SuggestionsContent = useMemo(() => {
+    if (props.suggestions.length === 0 && !props.isFetching) {
+      return <ErrorMessage error={'No results'} action="Clear filter" onClick={clearFilter} />;
     }
 
-    return null;
-  }, [props.error]);
+    return props.suggestions.map(props.renderItem);
+  }, [props.suggestions, props.isFetching, props.renderItem]);
+
+  const ErrorContent = useMemo(() => {
+    return <ErrorMessage error={props.error} action="Retry" onClick={props.onEndReached} />;
+  }, [props.error, props.onEndReached]);
 
   return (
     <div className="dropdown">
@@ -62,10 +65,10 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       />
-      <div className={`dropdown__suggestions ${focused ? 'shown' : ''}`} ref={suggestionsRef}>
-        {props.suggestions.length > 0 && props.suggestions.map(props.renderItem)}
+      <div className={`dropdown__suggestions ${focused ? 'shown' : 'shown'}`} ref={suggestionsRef}>
+        {SuggestionsContent}
         {props.isFetching && <Loading />}
-        {errorContent}
+        {props.error && ErrorContent}
       </div>
     </div>
   );

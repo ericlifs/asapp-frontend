@@ -1,0 +1,16 @@
+.error-message {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+
+  &__title {
+    font-size: 0.8rem;
+  }
+
+  &__action {
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
