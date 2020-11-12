@@ -35,12 +35,25 @@ class CitiesStore {
     return this.fetchStatus === FetchStatus.Fetching;
   }
 
-  protected async fetchCitiesByTerm(filter = '', offset = 0): Promise<CitiesResponse> {
-    return api.get<CitiesResponse>(API_CONFIG.ENDPOINTS.CITIES, {
-      filter,
-      offset: offset * 20,
-      limit: 20,
-    });
+  @action
+  protected async fetchCitiesByTerm(filter = '', offset = 0): Promise<CitiesResponse | undefined> {
+    this.error = '';
+    this.fetchStatus = FetchStatus.Fetching;
+
+    try {
+      const response = await api.get<CitiesResponse>(API_CONFIG.ENDPOINTS.CITIES, {
+        filter,
+        offset: offset * 20,
+        limit: 20,
+      });
+
+      this.fetchStatus = FetchStatus.Fetched;
+
+      return response;
+    } catch (error) {
+      this.error = error.message;
+      this.fetchStatus = FetchStatus.Error;
+    }
   }
 
   @action protected resetFilter(filter: string): void {
@@ -50,41 +63,26 @@ class CitiesStore {
   }
 
   @action public async getCitiesByFilter(filter: string) {
-    this.error = '';
-
     if (filter !== this.currentFilter) {
       this.resetFilter(filter);
     }
 
     if (filter) {
-      this.fetchStatus = FetchStatus.Fetching;
+      const response = await this.fetchCitiesByTerm(filter, this.filteredCitiesPage);
 
-      try {
-        const res = await this.fetchCitiesByTerm(filter, this.filteredCitiesPage);
-
-        this.filteredCities = [...this.filteredCities, ...res.data];
-        this.fetchStatus = FetchStatus.Fetched;
+      if (response) {
+        this.filteredCities = [...this.filteredCities, ...response.data];
         this.filteredCitiesPage += 1;
-      } catch (err) {
-        this.error = err.message;
-        this.fetchStatus = FetchStatus.Error;
       }
     }
   }
 
   @action public async getAllCities() {
-    this.fetchStatus = FetchStatus.Fetching;
-    this.error = '';
+    const response = await this.fetchCitiesByTerm('', this.allCitiesPage);
 
-    try {
-      const res = await this.fetchCitiesByTerm('', this.allCitiesPage);
-
-      this.allCities = [...this.allCities, ...res.data];
-      this.fetchStatus = FetchStatus.Fetched;
+    if (response) {
+      this.allCities = [...this.allCities, ...response.data];
       this.allCitiesPage += 1;
-    } catch (err) {
-      this.error = err.message;
-      this.fetchStatus = FetchStatus.Error;
     }
   }
 
