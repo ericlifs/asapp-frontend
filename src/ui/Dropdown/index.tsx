@@ -10,6 +10,7 @@ interface DropdownProps {
   isFetching: boolean;
   suggestions: any[];
   error: string;
+  endReached: boolean;
   renderItem: (item: any) => JSX.Element;
   onInputChange: (value: string) => void | Promise<void>;
   onEndReached?: () => void | Promise<void>;
@@ -31,10 +32,10 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
   }, [debouncedTerm]);
 
   useEffect(() => {
-    if (percentageScrolled === 100 && !props.isFetching && props.onEndReached) {
+    if (percentageScrolled === 100 && !props.isFetching && props.onEndReached && !props.endReached) {
       props.onEndReached();
     }
-  }, [percentageScrolled]);
+  }, [percentageScrolled, props.endReached]);
 
   const errorContent = useMemo(() => {
     if (props.error !== '') {
@@ -61,7 +62,7 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       />
-      <div className={`dropdown__suggestions ${focused ? 'shown' : 'shown'}`} ref={suggestionsRef}>
+      <div className={`dropdown__suggestions ${focused ? 'shown' : ''}`} ref={suggestionsRef}>
         {props.suggestions.length > 0 && props.suggestions.map(props.renderItem)}
         {props.isFetching && <Loading />}
         {errorContent}

@@ -4,6 +4,8 @@ import api from '../api';
 import API_CONFIG from '../api/config';
 import { CitiesResponse, CityInfo, FetchStatus } from '../interfaces';
 
+const LIMIT = 20;
+
 class CitiesStore {
   constructor() {
     makeAutoObservable(this);
@@ -21,10 +23,18 @@ class CitiesStore {
 
   protected allCitiesPage: number = 0;
 
+  protected allCitiesTotal: number = 0;
+
   protected filteredCitiesPage: number = 0;
 
+  protected filteredCitiesTotal: number = 0;
+
+  @computed public get isFilteringMode() {
+    return this.currentFilter !== '';
+  }
+
   @computed public get currentCitiesList() {
-    if (this.currentFilter !== '') {
+    if (this.isFilteringMode) {
       return this.filteredCities;
     }
 
@@ -35,6 +45,14 @@ class CitiesStore {
     return this.fetchStatus === FetchStatus.Fetching;
   }
 
+  @computed public get hasMoreCitiesToFetch() {
+    const totalPages = this.isFilteringMode ? this.filteredCitiesTotal : this.allCitiesTotal;
+    const currentPage = this.isFilteringMode ? this.filteredCitiesPage : this.allCitiesPage;
+    const fetchesToDo = Math.ceil(totalPages / LIMIT);
+
+    return fetchesToDo > currentPage;
+  }
+
   @action
   protected async fetchCitiesByTerm(filter = '', offset = 0): Promise<CitiesResponse | undefined> {
     this.error = '';
@@ -43,8 +61,8 @@ class CitiesStore {
     try {
       const response = await api.get<CitiesResponse>(API_CONFIG.ENDPOINTS.CITIES, {
         filter,
-        offset: offset * 20,
-        limit: 20,
+        offset: offset * LIMIT,
+        limit: LIMIT,
       });
 
       this.fetchStatus = FetchStatus.Fetched;
@@ -60,6 +78,7 @@ class CitiesStore {
     this.filteredCities = [];
     this.currentFilter = filter;
     this.filteredCitiesPage = 0;
+    this.filteredCitiesTotal = 0;
   }
 
   @action public async getCitiesByFilter(filter: string) {
@@ -72,6 +91,7 @@ class CitiesStore {
 
       if (response) {
         this.filteredCities = [...this.filteredCities, ...response.data];
+        this.filteredCitiesTotal = response.total;
         this.filteredCitiesPage += 1;
       }
     }
@@ -82,12 +102,13 @@ class CitiesStore {
 
     if (response) {
       this.allCities = [...this.allCities, ...response.data];
+      this.allCitiesTotal = response.total;
       this.allCitiesPage += 1;
     }
   }
 
   public getMoreCities() {
-    if (this.currentFilter) {
+    if (this.isFilteringMode) {
       return this.getCitiesByFilter(this.currentFilter);
     }
 

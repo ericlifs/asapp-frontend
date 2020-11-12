@@ -33,6 +33,7 @@ function App() {
         <Dropdown
           placeholder="Type to filter by city name or country"
           onInputChange={onDropdownInputChange}
+          endReached={!citiesStore.hasMoreCitiesToFetch}
           error={citiesStore.error}
           suggestions={citiesStore.currentCitiesList}
           isFetching={citiesStore.isFetching}
