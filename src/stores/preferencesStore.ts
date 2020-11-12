@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { action, computed, makeAutoObservable } from 'mobx';
 import { createContext } from 'react';
-import { getNewFavoritesStore } from 'utils';
+import { getNewFavoritesState } from 'utils';
 import { CityInfo, Favorites } from 'interfaces';
 
 class PreferencesStore {
@@ -22,7 +22,7 @@ class PreferencesStore {
    */
   @action
   public toggleFavorite(city: CityInfo) {
-    this.favorites = getNewFavoritesStore(this.favorites, city);
+    this.favorites = getNewFavoritesState(this.favorites, city);
   }
 }
 
