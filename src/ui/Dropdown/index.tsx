@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-import { useDebounce, usePercentageScrolled } from 'hooks';
+import { useDebounce, usePercentageScrolled, useOnClickOutside } from 'hooks';
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorMessage, Loading } from 'ui';
 import './index.scss';
@@ -20,8 +20,10 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
   const [term, setTerm] = useState<string>('');
   const [focused, setFocused] = useState<boolean>(false);
   const debouncedTerm = useDebounce<string>(term, 600);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const percentageScrolled = usePercentageScrolled(suggestionsRef.current);
+  useOnClickOutside(dropdownRef, () => setFocused(false));
 
   const onInputValueChange = (ev: ChangeEvent<HTMLInputElement>) => {
     setTerm(ev.target.value);
@@ -55,16 +57,15 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
   }, [props.error, props.onEndReached]);
 
   return (
-    <div className="dropdown">
+    <div className="dropdown" ref={dropdownRef}>
       <input
         className="dropdown__input"
         placeholder={props.placeholder}
         value={term}
         onChange={onInputValueChange}
         onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
       />
-      <div className={`dropdown__suggestions ${focused ? 'shown' : 'shown'}`} ref={suggestionsRef}>
+      <div className={`dropdown__suggestions ${focused ? 'shown' : ''}`} ref={suggestionsRef}>
         {SuggestionsContent}
         {props.isFetching && <Loading />}
         {props.error && ErrorContent}
