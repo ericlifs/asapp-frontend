@@ -1,0 +1,19 @@
+.animated-suggestion {
+  position: absolute;
+  right: -20px;
+  top: -4px;
+  bottom: -4px;
+  left: 100%;
+  overflow: hidden;
+  opacity: 0;
+  transition: all ease-in-out 500ms;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &--shown {
+    opacity: 1;
+    left: -20px;
+  }
+}

@@ -3,6 +3,9 @@ import { CityInfo } from 'interfaces';
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useMemo } from 'react';
 import { PreferencesStore } from 'stores';
+import AnimatedSuggestion from 'ui/AnimatedSuggestion';
+import ErrorMessage from 'ui/ErrorMessage';
+import Loading from 'ui/Loading';
 import './index.scss';
 
 interface CitySuggestionProps {
@@ -12,25 +15,15 @@ interface CitySuggestionProps {
 const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProps): JSX.Element => {
   const preferencesStore = useContext(PreferencesStore);
 
-  const isFaved = useMemo(() => {
-    return Boolean(preferencesStore.favorites[props.city.geonameid]);
-  }, [preferencesStore.favorites, props.city]);
+  //prettier-ignore
+  const isFaved = useMemo(() => preferencesStore.favorites[props.city.geonameid], [preferencesStore.favorites, props.city]);
+  const buttonText = useMemo((): string => (isFaved ? 'Remove' : 'Add'), [isFaved]);
+  const buttonClass = useMemo((): string => (isFaved ? 'red' : ''), [isFaved]);
 
-  const buttonText = useMemo((): string => {
-    if (isFaved) {
-      return 'Remove';
-    }
-
-    return 'Add';
-  }, [isFaved]);
-
-  const buttonClass = useMemo((): string => {
-    if (isFaved) {
-      return 'red';
-    }
-
-    return '';
-  }, [isFaved]);
+  const isSubmitting = useMemo((): boolean => preferencesStore.submittingCity === props.city.geonameid, [
+    props.city,
+    preferencesStore.submittingCity,
+  ]);
 
   const onButtonClicked = () => {
     preferencesStore.toggleFavorite(props.city);
@@ -45,9 +38,21 @@ const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProp
         <h3 className="city-suggestion__country">{props.city.country}</h3>
         <h3 className="city-suggestion__subcountry">{props.city.subcountry}</h3>
       </div>
-      <button className={`city-suggestion__button ${buttonClass}`} onClick={onButtonClicked}>
+      <button
+        className={`city-suggestion__button ${buttonClass}`}
+        disabled={preferencesStore.isFetching}
+        onClick={onButtonClicked}
+      >
         {buttonText}
       </button>
+      <AnimatedSuggestion shown={isSubmitting}>
+        <>
+          {preferencesStore.isFetching && <Loading />}
+          {preferencesStore.error !== '' && (
+            <ErrorMessage error={preferencesStore.error} action="Retry" onClick={onButtonClicked} />
+          )}
+        </>
+      </AnimatedSuggestion>
     </div>
   );
 };
