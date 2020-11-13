@@ -10,6 +10,7 @@ function App() {
 
   useEffect(() => {
     citiesStore.getAllCities();
+    preferencesStore.getFavorites();
   }, []);
 
   const onDropdownInputChange = async (term: string): Promise<void> => {

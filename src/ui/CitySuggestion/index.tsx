@@ -20,10 +20,10 @@ const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProp
   const buttonText = useMemo((): string => (isFaved ? 'Remove' : 'Add'), [isFaved]);
   const buttonClass = useMemo((): string => (isFaved ? 'red' : ''), [isFaved]);
 
-  const isSubmitting = useMemo((): boolean => preferencesStore.submittingCity === props.city.geonameid, [
-    props.city,
-    preferencesStore.submittingCity,
-  ]);
+  const isSubmittingCurrentCity = useMemo(
+    (): boolean => preferencesStore.submittingCity === props.city.geonameid,
+    [props.city, preferencesStore.submittingCity],
+  );
 
   const onButtonClicked = () => {
     preferencesStore.toggleFavorite(props.city);
@@ -40,16 +40,16 @@ const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProp
       </div>
       <button
         className={`city-suggestion__button ${buttonClass}`}
-        disabled={preferencesStore.isFetching}
+        disabled={preferencesStore.isSubmitting}
         onClick={onButtonClicked}
       >
         {buttonText}
       </button>
-      <AnimatedSuggestion shown={isSubmitting}>
+      <AnimatedSuggestion shown={isSubmittingCurrentCity}>
         <>
-          {preferencesStore.isFetching && <Loading />}
-          {preferencesStore.error !== '' && (
-            <ErrorMessage error={preferencesStore.error} action="Retry" onClick={onButtonClicked} />
+          {preferencesStore.isSubmitting && <Loading />}
+          {preferencesStore.submittingError !== '' && (
+            <ErrorMessage error={preferencesStore.submittingError} action="Retry" onClick={onButtonClicked} />
           )}
         </>
       </AnimatedSuggestion>

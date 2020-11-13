@@ -1,6 +1,10 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-import React, { useMemo } from 'react';
+import { observer } from 'mobx-react-lite';
+import React, { useContext, useMemo } from 'react';
+import { PreferencesStore } from 'stores';
+import ErrorMessage from 'ui/ErrorMessage';
+import Loading from 'ui/Loading';
 import './index.scss';
 
 interface FavoritesProps {
@@ -10,20 +14,36 @@ interface FavoritesProps {
 }
 
 const Favorites: React.FC<FavoritesProps> = (props: FavoritesProps) => {
+  const preferencesStore = useContext(PreferencesStore);
+
   const listContent = useMemo(() => {
+    if (preferencesStore.isFetching) {
+      return <Loading />;
+    }
+
+    if (preferencesStore.fetchingError) {
+      return (
+        <ErrorMessage
+          error={preferencesStore.fetchingError}
+          action="Retry"
+          onClick={() => preferencesStore.getFavorites()}
+        />
+      );
+    }
+
     if (props.favorites.length > 0) {
-      return <div className="favorites__list">{props.favorites.map(props.renderItem)}</div>;
+      return props.favorites.map(props.renderItem);
     }
 
     return <h2 className="favorites__subtitle">Oops... you do not have favorites yet</h2>;
-  }, [props.favorites]);
+  }, [props.favorites, preferencesStore.isFetching]);
 
   return (
     <section className="favorites">
       <h1 className="favorites__title">{props.heading}</h1>
-      {listContent}
+      <div className="favorites__content">{listContent}</div>
     </section>
   );
 };
 
-export default Favorites;
+export default observer(Favorites);
