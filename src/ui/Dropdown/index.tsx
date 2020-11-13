@@ -2,8 +2,7 @@
 /* eslint-disable no-unused-vars */
 import { useDebounce, usePercentageScrolled } from 'hooks';
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
-import ErrorMessage from 'ui/ErrorMessage';
-import Loading from '../Loading';
+import { ErrorMessage, Loading } from 'ui';
 import './index.scss';
 
 interface DropdownProps {

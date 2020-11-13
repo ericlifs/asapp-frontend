@@ -3,9 +3,7 @@ import { CityInfo } from 'interfaces';
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useMemo } from 'react';
 import { PreferencesStore } from 'stores';
-import AnimatedSuggestion from 'ui/AnimatedSuggestion';
-import ErrorMessage from 'ui/ErrorMessage';
-import Loading from 'ui/Loading';
+import { ErrorMessage, AnimatedSuggestion, Loading } from 'ui';
 import './index.scss';
 
 interface CitySuggestionProps {

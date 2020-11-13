@@ -3,8 +3,7 @@
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useMemo } from 'react';
 import { PreferencesStore } from 'stores';
-import ErrorMessage from 'ui/ErrorMessage';
-import Loading from 'ui/Loading';
+import { ErrorMessage, Loading } from 'ui';
 import './index.scss';
 
 interface FavoritesProps {
