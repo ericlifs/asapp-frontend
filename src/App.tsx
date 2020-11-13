@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect } from 'react';
 import { CitiesStore, PreferencesStore } from 'stores';
 import { CitySuggestion, Dropdown, Favorites } from 'ui';
+import FavoriteItem from 'ui/FavoriteItem';
 
 function App() {
   const citiesStore = useContext(CitiesStore);
@@ -27,7 +28,7 @@ function App() {
         <Favorites
           heading="Your favorites"
           favorites={preferencesStore.activeFavorites}
-          renderItem={(item: CityInfo) => <CitySuggestion key={item.geonameid} city={item} />}
+          renderItem={(item: CityInfo | Error) => <FavoriteItem item={item} />}
         />
       </section>
       <section className="main-section">

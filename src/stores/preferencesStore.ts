@@ -38,6 +38,49 @@ class PreferencesStore {
     return Object.values(this.favorites).filter(Boolean);
   }
 
+  protected async getFavoritesCitiesInformation(cities: number[]) {
+    const citiesPromisesSettled = await Promise.allSettled(
+      cities.map((city: number) => api.get(`${API_CONFIG.ENDPOINTS.CITIES}/${city}`, {})),
+    );
+
+    return citiesPromisesSettled.reduce((accum, cityResponse, index) => {
+      const cityId = cities[index];
+
+      return {
+        ...accum,
+        [cityId]: cityResponse.status === 'fulfilled' ? cityResponse.value : cityResponse.reason,
+      };
+    }, {});
+  }
+
+  @action
+  public async retryFetchFavoritesInformation() {
+    this.fetchStatus = FetchStatus.Fetching;
+
+    try {
+      const citiesToFetch = Object.keys(this.favorites).reduce((accum: number[], currentCity) => {
+        const cityId = Number(currentCity);
+
+        if (this.favorites[cityId] instanceof Error) {
+          return [...accum, cityId];
+        }
+
+        return accum;
+      }, []);
+
+      const res = await this.getFavoritesCitiesInformation(citiesToFetch);
+
+      this.favorites = {
+        ...this.favorites,
+        ...res,
+      };
+
+      this.fetchStatus = FetchStatus.Fetched;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   @action
   public async getFavorites(): Promise<void> {
     this.fetchingError = '';
@@ -49,18 +92,7 @@ class PreferencesStore {
         {},
       );
 
-      const citiesPromisesSettled = await Promise.allSettled(
-        data.map((cityId: number) => api.get(`${API_CONFIG.ENDPOINTS.CITIES}/${cityId}`, {})),
-      );
-
-      this.favorites = citiesPromisesSettled.reduce((accum, cityResponse, index) => {
-        const cityId = data[index];
-
-        return {
-          ...accum,
-          [cityId]: cityResponse.status === 'fulfilled' ? cityResponse.value : cityResponse.reason,
-        };
-      }, {});
+      this.favorites = await this.getFavoritesCitiesInformation(data);
 
       this.fetchStatus = FetchStatus.Fetched;
     } catch (error) {
