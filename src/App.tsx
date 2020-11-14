@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect } from 'react';
 import { CitiesStore, PreferencesStore } from 'stores';
 import { CitySuggestion, Dropdown, Favorites, FavoriteItem } from 'ui';
+import 'styles/app.scss';
 
 function App() {
   const citiesStore = useContext(CitiesStore);

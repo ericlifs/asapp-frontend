@@ -1,3 +1,5 @@
+@import 'styles/responsive.scss';
+
 .favorites {
   width: 100%;
   height: 100%;
@@ -6,18 +8,69 @@
   background: white;
   border-right: 3px solid black;
 
+  @include mobile-and-tablet {
+    border: 3px solid black;
+    padding: 1.5rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: auto;
+
+    &.mobile-opened {
+      height: 100vh;
+
+      .favorites__content {
+        margin-top: 1rem;
+        max-height: 100vh;
+        opacity: 1;
+      }
+    }
+
+    &.mobile-closed {
+      .favorites__content {
+        margin-top: 0;
+        max-height: 0;
+        opacity: 0;
+      }
+    }
+  }
+
   &__content {
+    transition: all ease-in-out 500ms;
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 2rem;
   }
 
   &__title {
     font-size: 1.5rem;
-    margin-bottom: 2rem;
   }
 
   &__subtitle {
     font-size: 1rem;
+
+    @include mobile-and-tablet {
+      font-size: 0.8rem;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    @include desktop-only {
+      pointer-events: none;
+    }
+  }
+
+  &__chevron {
+    height: 20px;
+
+    @include desktop-only {
+      display: none;
+    }
   }
 }

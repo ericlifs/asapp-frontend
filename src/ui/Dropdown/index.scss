@@ -1,3 +1,5 @@
+@import 'styles/responsive.scss';
+
 .dropdown {
   position: relative;
   max-width: 450px;
@@ -8,6 +10,10 @@
     padding: 20px;
     border: 3px solid black;
     font-size: 1.2rem;
+
+    @include mobile-and-tablet {
+      font-size: 1rem;
+    }
   }
 
   &__suggestions {

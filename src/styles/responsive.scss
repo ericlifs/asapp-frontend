@@ -1,0 +1,20 @@
+$phoneBreakpoint: 700px;
+$tabletBreakpoint: 900px;
+
+@mixin desktop-only {
+  @media only screen and (min-width: $tabletBreakpoint) {
+    @content;
+  }
+}
+
+@mixin mobile-and-tablet {
+  @media only screen and (max-width: $tabletBreakpoint) {
+    @content;
+  }
+}
+
+@mixin mobile-only {
+  @media only screen and (max-width: $phoneBreakpoint) {
+    @content;
+  }
+}
