@@ -24,10 +24,6 @@
       .preferred-cities__content {
         max-height: 100vh;
         opacity: 1;
-
-        .error-message {
-          margin: 10px 0;
-        }
       }
     }
 
@@ -49,6 +45,10 @@
     flex-direction: column;
     align-items: center;
     margin-top: 2rem;
+
+    .error-message {
+      margin: 10px 0;
+    }
   }
 
   &__title {
