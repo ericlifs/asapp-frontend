@@ -167,6 +167,7 @@ class PreferencesStore {
       clearTimeout(this.timeoutId);
     }
 
+    this.submittingError = '';
     this.submittingCity = city.geonameid;
     this.submitStatus = FetchStatus.Fetching;
 
