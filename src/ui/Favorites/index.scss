@@ -28,7 +28,10 @@
     }
 
     &.mobile-closed {
+      height: 80px;
+
       .favorites__content {
+        pointer-events: none;
         margin-top: 0;
         max-height: 0;
         opacity: 0;
