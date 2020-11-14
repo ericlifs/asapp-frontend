@@ -4,11 +4,11 @@ import React, { useContext } from 'react';
 import { PreferencesStore } from 'stores';
 import { CitySuggestion, ErrorMessage } from 'ui';
 
-interface FavoriteItemProps {
+interface PreferredCityItemProps {
   item: CityInfo | Error;
 }
 
-const FavoriteItem: React.FC<FavoriteItemProps> = (props: FavoriteItemProps) => {
+const PreferredCityItem: React.FC<PreferredCityItemProps> = (props: PreferredCityItemProps) => {
   const preferencesStore = useContext(PreferencesStore);
 
   if (props.item instanceof Error) {
@@ -16,7 +16,7 @@ const FavoriteItem: React.FC<FavoriteItemProps> = (props: FavoriteItemProps) => 
       <ErrorMessage
         error={(props.item as Error).message}
         action="Retry"
-        onClick={() => preferencesStore.retryFetchFavoritesInformation()}
+        onClick={() => preferencesStore.retryFetchPreferredCitiesInformation()}
       />
     );
   }
@@ -24,4 +24,4 @@ const FavoriteItem: React.FC<FavoriteItemProps> = (props: FavoriteItemProps) => 
   return <CitySuggestion city={props.item as CityInfo} />;
 };
 
-export default observer(FavoriteItem);
+export default observer(PreferredCityItem);

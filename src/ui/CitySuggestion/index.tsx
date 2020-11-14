@@ -14,7 +14,7 @@ const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProp
   const preferencesStore = useContext(PreferencesStore);
 
   //prettier-ignore
-  const isFaved = useMemo(() => preferencesStore.favorites[props.city.geonameid], [preferencesStore.favorites, props.city]);
+  const isFaved = useMemo(() => preferencesStore.preferredCities[props.city.geonameid], [preferencesStore.preferredCities, props.city]);
   const buttonText = useMemo((): string => (isFaved ? 'Remove' : 'Add'), [isFaved]);
   const buttonClass = useMemo((): string => (isFaved ? 'red' : ''), [isFaved]);
 
@@ -24,7 +24,7 @@ const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProp
   );
 
   const onButtonClicked = () => {
-    preferencesStore.toggleFavorite(props.city);
+    preferencesStore.togglePreferredCity(props.city);
   };
 
   return (

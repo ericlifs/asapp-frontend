@@ -1,7 +1,7 @@
 import CityInfo from './cityInfo';
 
-interface Favorites {
+interface PreferredCities {
   [key: number]: CityInfo | undefined | Error;
 }
 
-export default Favorites;
+export default PreferredCities;

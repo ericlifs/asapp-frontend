@@ -2,7 +2,7 @@ import { CityInfo } from 'interfaces';
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect } from 'react';
 import { CitiesStore, PreferencesStore } from 'stores';
-import { CitySuggestion, Dropdown, Favorites, FavoriteItem } from 'ui';
+import { CitySuggestion, Dropdown, PreferredCities, PreferredCityItem } from 'ui';
 import 'styles/app.scss';
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
 
   useEffect(() => {
     citiesStore.getAllCities();
-    preferencesStore.getFavorites();
+    preferencesStore.getPreferredCities();
   }, []);
 
   const onDropdownInputChange = async (term: string): Promise<void> => {
@@ -25,10 +25,10 @@ function App() {
   return (
     <div className="App">
       <section className="leftbar-section">
-        <Favorites
-          heading="Your favorites"
-          favorites={preferencesStore.activeFavorites}
-          renderItem={(item: CityInfo | Error) => <FavoriteItem item={item} />}
+        <PreferredCities
+          heading="Your preferred cities"
+          preferredCities={preferencesStore.activePreferredCities}
+          renderItem={(item: CityInfo | Error) => <PreferredCityItem item={item} />}
         />
       </section>
       <section className="main-section">

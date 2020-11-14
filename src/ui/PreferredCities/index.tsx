@@ -7,14 +7,15 @@ import { ErrorMessage, Loading } from 'ui';
 import ChevronUp from 'assets/up-chevron.png';
 import ChevronDown from 'assets/down-chevron.png';
 import './index.scss';
+import { CityInfo } from 'interfaces';
 
-interface FavoritesProps {
+interface PreferredCitiesProps {
   heading: string;
-  favorites: any[];
+  preferredCities: (CityInfo | Error)[];
   renderItem: (item: any) => JSX.Element;
 }
 
-const Favorites: React.FC<FavoritesProps> = (props: FavoritesProps) => {
+const PreferredCities: React.FC<PreferredCitiesProps> = (props: PreferredCitiesProps) => {
   const preferencesStore = useContext(PreferencesStore);
   const [opened, setOpened] = useState(false);
 
@@ -34,27 +35,27 @@ const Favorites: React.FC<FavoritesProps> = (props: FavoritesProps) => {
         <ErrorMessage
           error={preferencesStore.fetchingError}
           action="Retry"
-          onClick={() => preferencesStore.getFavorites()}
+          onClick={() => preferencesStore.getPreferredCities()}
         />
       );
     }
 
-    if (props.favorites.length > 0) {
-      return props.favorites.map(props.renderItem);
+    if (props.preferredCities.length > 0) {
+      return props.preferredCities.map(props.renderItem);
     }
 
-    return <h2 className="favorites__subtitle">Oops... you do not have favorites yet</h2>;
-  }, [props.favorites, preferencesStore.isFetching]);
+    return <h2 className="preferred-cities__subtitle">Oops... you do not have preferred cities yet</h2>;
+  }, [props.preferredCities, preferencesStore.isFetching]);
 
   return (
-    <section className={`favorites ${opened ? 'mobile-opened' : 'mobile-closed'}`}>
-      <div className="favorites__header" onClick={toggleMobileMenu}>
-        <h1 className="favorites__title">{props.heading}</h1>
-        <img src={ImageSrc} className="favorites__chevron" />
+    <section className={`preferred-cities ${opened ? 'mobile-opened' : 'mobile-closed'}`}>
+      <div className="preferred-cities__header" onClick={toggleMobileMenu}>
+        <h1 className="preferred-cities__title">{props.heading}</h1>
+        <img src={ImageSrc} className="preferred-cities__chevron" />
       </div>
-      <div className="favorites__content">{listContent}</div>
+      <div className="preferred-cities__content">{listContent}</div>
     </section>
   );
 };
 
-export default observer(Favorites);
+export default observer(PreferredCities);

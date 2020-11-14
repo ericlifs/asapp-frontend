@@ -2,8 +2,8 @@
 /* eslint-disable no-unused-vars */
 import { action, computed, observable } from 'mobx';
 import { createContext } from 'react';
-import { getNewFavoritesState } from 'utils';
-import { CityInfo, Favorites, FetchStatus, PreferredCitiesResponse } from 'interfaces';
+import { getNewPreferredCitiesState } from 'utils';
+import { CityInfo, PreferredCities, FetchStatus, PreferredCitiesResponse } from 'interfaces';
 import api, { API_CONFIG } from '../api';
 
 class PreferencesStore {
@@ -11,7 +11,7 @@ class PreferencesStore {
 
   @observable public fetchStatus = FetchStatus.Initial;
 
-  @observable public favorites: Favorites = {};
+  @observable public preferredCities: PreferredCities = {};
 
   @observable public submittingCity?: number;
 
@@ -30,60 +30,60 @@ class PreferencesStore {
   }
 
   @computed
-  public get activeFavorites() {
-    return Object.values(this.favorites).filter(Boolean);
+  public get activePreferredCities() {
+    return Object.values(this.preferredCities).filter(Boolean);
   }
 
   /**
    * Takes an array of cities ids and foreach one it requests it information
    * @param {number[]} cities - Cities' ids whose information will be requested
    */
-  protected async getFavoritesCitiesInformation(cities: number[]) {
+  protected async getPreferredCitiesInformation(cities: number[]) {
     // I used a Promise.allSettled instead of a Promise.all because otherwise after facing the first error it would stop
     // doing the remaining requests (Promise.allSettled does every request even if an error is thrown in the first request)
     const citiesInformationById = await Promise.allSettled(
       cities.map((city: number) => api.get(`${API_CONFIG.ENDPOINTS.CITIES}/${city}`, {})),
     );
 
-    return citiesInformationById.reduce((favorites, cityResponse, currentIndex) => {
+    return citiesInformationById.reduce((preferredCities, cityResponse, currentIndex) => {
       const cityId = cities[currentIndex];
 
       return {
-        ...favorites,
+        ...preferredCities,
         [cityId]: cityResponse.status === 'fulfilled' ? cityResponse.value : cityResponse.reason,
       };
     }, {});
   }
 
   /**
-   * Takes the current favorites cities which information couldn't be fetched initially and tries to refetch it and save it within the store info
+   * Takes the current preferred cities which information couldn't be fetched initially and tries to refetch it and save it within the store info
    * @async
    */
   @action
-  public async retryFetchFavoritesInformation() {
+  public async retryFetchPreferredCitiesInformation() {
     this.fetchStatus = FetchStatus.Fetching;
 
     try {
       // I go through the local preferred cities information finding for the cities that got an error while
       // trying to get the whole city information
-      const citiesToFetch = Object.keys(this.favorites).reduce((accum: number[], currentCity) => {
+      const citiesToFetch = Object.keys(this.preferredCities).reduce((accum: number[], currentCity) => {
         const cityId = Number(currentCity);
 
         // If it's an instance of an Error object it's because there was an error while doing the GET
         // request for getting the city information by id
-        if (this.favorites[cityId] instanceof Error) {
+        if (this.preferredCities[cityId] instanceof Error) {
           return [...accum, cityId];
         }
 
         return accum;
       }, []);
 
-      // I call the getFavoritesCitiesInformation function again but only with the cities that got an error
-      const res = await this.getFavoritesCitiesInformation(citiesToFetch);
+      // I call the getPreferredCitiesInformation function again but only with the cities that got an error
+      const res = await this.getPreferredCitiesInformation(citiesToFetch);
 
       // I save the new information into store
-      this.favorites = {
-        ...this.favorites,
+      this.preferredCities = {
+        ...this.preferredCities,
         ...res,
       };
 
@@ -94,11 +94,11 @@ class PreferencesStore {
   }
 
   /**
-   * Gets user favorites cities from the backend and saves that information within the store
+   * Gets user preferred cities from the backend and saves that information within the store
    * @async
    */
   @action
-  public async getFavorites(): Promise<void> {
+  public async getPreferredCities(): Promise<void> {
     this.fetchingError = '';
     this.fetchStatus = FetchStatus.Fetching;
 
@@ -111,7 +111,7 @@ class PreferencesStore {
 
       // Does a GET for each ID in order to get the city information and saves that preferred information locally within the store
       // (in order to avoid doing more requests in the future)
-      this.favorites = await this.getFavoritesCitiesInformation(data);
+      this.preferredCities = await this.getPreferredCitiesInformation(data);
       this.fetchStatus = FetchStatus.Fetched;
     } catch (error) {
       this.fetchingError = error.message;
@@ -120,14 +120,15 @@ class PreferencesStore {
   }
 
   /**
-   * Saves city information within store favorites object and sets the store into a "success mode" after toggling favorite in the backend
-   * @param {CityInfo} city - City info object which was added/removed from favorites list in the backend
+   * Saves city information within store preferred cities object and sets the store into a "success mode"
+   * after toggling preferred city in the backend
+   * @param {CityInfo} city - City info object which was added/removed from preferred cities list in the backend
    */
   @action
-  protected onFavoriteSuccessfullyToggled(city: CityInfo) {
+  protected onPreferredCitySuccessfullyToggled(city: CityInfo) {
     // I get the new preferred list state by calling a utils function which based on the current state
     // and a city, returns a new preferred list
-    this.favorites = getNewFavoritesState(this.favorites, city);
+    this.preferredCities = getNewPreferredCitiesState(this.preferredCities, city);
     this.submitStatus = FetchStatus.Fetched;
     this.submittingCity = undefined;
   }
@@ -148,7 +149,7 @@ class PreferencesStore {
    * @param {Error} error - Error information
    */
   @action
-  protected onFavoriteErrorToggled(error: Error) {
+  protected onPreferredCityErrorToggled(error: Error) {
     this.submittingError = error.message;
     this.submitStatus = FetchStatus.Error;
 
@@ -156,12 +157,12 @@ class PreferencesStore {
   }
 
   /**
-   * Calls backend for toggling city from favorites lists and saves that change within the store
-   * @param {CityInfo} city - City info object which will be added/removed from favorites list
+   * Calls backend for toggling city from preferred city list and saves that change within the store
+   * @param {CityInfo} city - City info object which will be added/removed from preferred cities list
    * @async
    */
   @action
-  public async toggleFavorite(city: CityInfo) {
+  public async togglePreferredCity(city: CityInfo) {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
@@ -172,14 +173,14 @@ class PreferencesStore {
     try {
       // Performs a patch for toggling the city in the backend
       await api.patch(`${API_CONFIG.ENDPOINTS.PREFERENCES}/${API_CONFIG.ENDPOINTS.CITIES}`, {
-        [city.geonameid]: !this.favorites[city.geonameid],
+        [city.geonameid]: !this.preferredCities[city.geonameid],
       });
 
       // If the patch was succesfull I also save the store locally (in order to avoid doing a GET)
-      this.onFavoriteSuccessfullyToggled(city);
+      this.onPreferredCitySuccessfullyToggled(city);
     } catch (error) {
       // There was an error while doing the patch, so I put the store into an error state
-      this.onFavoriteErrorToggled(error);
+      this.onPreferredCityErrorToggled(error);
     }
   }
 }
