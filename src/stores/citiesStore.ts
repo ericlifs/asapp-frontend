@@ -1,4 +1,4 @@
-import { action, computed, makeAutoObservable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { createContext } from 'react';
 import api from '../api';
 import API_CONFIG from '../api/config';
@@ -7,27 +7,23 @@ import { CitiesResponse, CityInfo, FetchStatus } from '../interfaces';
 const LIMIT = 20;
 
 class CitiesStore {
-  constructor() {
-    makeAutoObservable(this);
-  }
+  @observable public fetchStatus = FetchStatus.Initial;
 
-  public fetchStatus = FetchStatus.Initial;
+  @observable public allCities: CityInfo[] = [];
 
-  public allCities: CityInfo[] = [];
+  @observable public filteredCities: CityInfo[] = [];
 
-  public filteredCities: CityInfo[] = [];
+  @observable public currentFilter: string = '';
 
-  public currentFilter: string = '';
+  @observable public error: string = '';
 
-  public error: string = '';
+  @observable protected allCitiesPage: number = 0;
 
-  protected allCitiesPage: number = 0;
+  @observable protected allCitiesTotal: number = 0;
 
-  protected allCitiesTotal: number = 0;
+  @observable protected filteredCitiesPage: number = 0;
 
-  protected filteredCitiesPage: number = 0;
-
-  protected filteredCitiesTotal: number = 0;
+  @observable protected filteredCitiesTotal: number = 0;
 
   @computed public get isFilteringMode() {
     return this.currentFilter !== '';
@@ -74,14 +70,16 @@ class CitiesStore {
     }
   }
 
-  @action protected resetFilter(filter: string): void {
+  @action
+  protected resetFilter(filter: string): void {
     this.filteredCities = [];
     this.currentFilter = filter;
     this.filteredCitiesPage = 0;
     this.filteredCitiesTotal = 0;
   }
 
-  @action public async getCitiesByFilter(filter: string) {
+  @action
+  public async getCitiesByFilter(filter: string) {
     if (filter !== this.currentFilter) {
       this.resetFilter(filter);
     }
@@ -97,7 +95,8 @@ class CitiesStore {
     }
   }
 
-  @action public async getAllCities() {
+  @action
+  public async getAllCities() {
     const response = await this.fetchCitiesByTerm('', this.allCitiesPage);
 
     if (response) {
@@ -107,6 +106,7 @@ class CitiesStore {
     }
   }
 
+  @action
   public getMoreCities() {
     if (this.isFilteringMode) {
       return this.getCitiesByFilter(this.currentFilter);

@@ -1,29 +1,25 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-import { action, computed, makeAutoObservable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { createContext } from 'react';
 import { getNewFavoritesState } from 'utils';
 import { CityInfo, Favorites, FetchStatus, PreferredCitiesResponse } from 'interfaces';
 import api, { API_CONFIG } from '../api';
 
 class PreferencesStore {
-  constructor() {
-    makeAutoObservable(this);
-  }
+  @observable public submitStatus = FetchStatus.Initial;
 
-  public submitStatus = FetchStatus.Initial;
+  @observable public fetchStatus = FetchStatus.Initial;
 
-  public fetchStatus = FetchStatus.Initial;
+  @observable public favorites: Favorites = {};
 
-  public favorites: Favorites = {};
+  @observable public submittingCity?: number;
 
-  public submittingCity?: number;
+  @observable public fetchingError: string = '';
 
-  public fetchingError: string = '';
+  @observable public submittingError: string = '';
 
-  public submittingError: string = '';
-
-  protected timeoutId?: NodeJS.Timeout;
+  @observable protected timeoutId?: NodeJS.Timeout;
 
   @computed public get isFetching() {
     return this.fetchStatus === FetchStatus.Fetching;
@@ -101,17 +97,22 @@ class PreferencesStore {
     }
   }
 
-  @action protected onFavoriteSuccessfullyToggled(city: CityInfo) {
+  @action
+  protected onFavoriteSuccessfullyToggled(city: CityInfo) {
     this.favorites = getNewFavoritesState(this.favorites, city);
     this.submitStatus = FetchStatus.Fetched;
+    this.submittingCity = undefined;
   }
 
-  @action clearCurrentError() {
+  @action
+  clearCurrentError() {
+    console.log('vuelve acá');
     this.submittingError = '';
     this.submittingCity = undefined;
   }
 
-  @action protected onFavoriteErrorToggled(error: Error) {
+  @action
+  protected onFavoriteErrorToggled(error: Error) {
     this.submittingError = error.message;
     this.submitStatus = FetchStatus.Error;
 
