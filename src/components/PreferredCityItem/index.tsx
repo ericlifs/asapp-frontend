@@ -2,7 +2,8 @@ import { CityInfo } from 'interfaces';
 import { observer } from 'mobx-react-lite';
 import React, { useContext } from 'react';
 import { PreferencesStore } from 'stores';
-import { CitySuggestion, ErrorMessage } from 'ui';
+import { CitySuggestion } from 'components';
+import { ErrorMessage } from 'ui';
 
 interface PreferredCityItemProps {
   item: CityInfo | Error;

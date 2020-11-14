@@ -2,7 +2,8 @@ import { CityInfo } from 'interfaces';
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect } from 'react';
 import { CitiesStore, PreferencesStore } from 'stores';
-import { CitySuggestion, Dropdown, PreferredCities, PreferredCityItem } from 'ui';
+import { Dropdown } from 'ui';
+import { PreferredCities, PreferredCityItem, CitySuggestion } from 'components';
 import 'styles/app.scss';
 
 function App() {
