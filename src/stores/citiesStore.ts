@@ -49,6 +49,12 @@ class CitiesStore {
     return fetchesToDo > currentPage;
   }
 
+  /**
+   * Fetches next page of cities list (used for all cities list or filtered cities list)
+   * @param {string} filter - Term that will be used for filtering cities
+   * @param {number} offset - Current offset that will be used for paginating cities
+   * @async
+   */
   @action
   protected async fetchCitiesByTerm(filter = '', offset = 0): Promise<CitiesResponse | undefined> {
     this.error = '';
@@ -70,6 +76,9 @@ class CitiesStore {
     }
   }
 
+  /**
+   * Clears the previous filter state and sets the new filter within the store
+   */
   @action
   protected resetFilter(filter: string): void {
     this.filteredCities = [];
@@ -78,6 +87,11 @@ class CitiesStore {
     this.filteredCitiesTotal = 0;
   }
 
+  /**
+   * Fetches next page of cities list, saves the response into store and increases by one the current page (used for all cities list or filtered cities list)
+   * @param {string} filter - Term that will be used for filtering cities
+   * @async
+   */
   @action
   public async getCitiesByFilter(filter: string) {
     if (filter !== this.currentFilter) {
@@ -95,6 +109,10 @@ class CitiesStore {
     }
   }
 
+  /**
+   * Fetches next page of all cities list, saves the response into store and increases by one the current page
+   * @async
+   */
   @action
   public async getAllCities() {
     const response = await this.fetchCitiesByTerm('', this.allCitiesPage);
@@ -106,6 +124,9 @@ class CitiesStore {
     }
   }
 
+  /**
+   * Fetches cities lists (all or filtered) next page information
+   */
   @action
   public getMoreCities() {
     if (this.isFilteringMode) {

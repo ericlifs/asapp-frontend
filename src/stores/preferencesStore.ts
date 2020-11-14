@@ -34,6 +34,10 @@ class PreferencesStore {
     return Object.values(this.favorites).filter(Boolean);
   }
 
+  /**
+   * Takes an array of cities ids and foreach one it requests it information
+   * @param {number[]} cities - Cities' ids whose information will be requested
+   */
   protected async getFavoritesCitiesInformation(cities: number[]) {
     const citiesPromisesSettled = await Promise.allSettled(
       cities.map((city: number) => api.get(`${API_CONFIG.ENDPOINTS.CITIES}/${city}`, {})),
@@ -49,6 +53,10 @@ class PreferencesStore {
     }, {});
   }
 
+  /**
+   * Takes the current favorites cities which information couldn't be fetched initially and tries to refetch it and save it within the store info
+   * @async
+   */
   @action
   public async retryFetchFavoritesInformation() {
     this.fetchStatus = FetchStatus.Fetching;
@@ -77,6 +85,10 @@ class PreferencesStore {
     }
   }
 
+  /**
+   * Gets user favorites cities from the backend and saves that information within the store
+   * @async
+   */
   @action
   public async getFavorites(): Promise<void> {
     this.fetchingError = '';
@@ -97,6 +109,10 @@ class PreferencesStore {
     }
   }
 
+  /**
+   * Saves city information within store favorites object and sets the store into a "success mode" after toggling favorite in the backend
+   * @param {CityInfo} city - City info object which was added/removed from favorites list in the backend
+   */
   @action
   protected onFavoriteSuccessfullyToggled(city: CityInfo) {
     this.favorites = getNewFavoritesState(this.favorites, city);
@@ -104,24 +120,33 @@ class PreferencesStore {
     this.submittingCity = undefined;
   }
 
+  /**
+   * Clears current error information saved within the store
+   */
   @action
-  clearCurrentError() {
-    console.log('vuelve acá');
-    this.submittingError = '';
-    this.submittingCity = undefined;
+  clearCurrentErrorAfterFiveSeconds() {
+    this.timeoutId = setTimeout(() => {
+      this.submittingError = '';
+      this.submittingCity = undefined;
+    }, 5000);
   }
 
+  /**
+   * Saves error information within the store and after 5 seconds it reverts those changes
+   * @param {Error} error - Error information
+   */
   @action
   protected onFavoriteErrorToggled(error: Error) {
     this.submittingError = error.message;
     this.submitStatus = FetchStatus.Error;
 
-    this.timeoutId = setTimeout(() => this.clearCurrentError(), 5000);
+    this.clearCurrentErrorAfterFiveSeconds();
   }
 
   /**
-   * Adds or removes city from favorites lists
+   * Calls backend for toggling city from favorites lists and saves that change within the store
    * @param {CityInfo} city - City info object which will be added/removed from favorites list
+   * @async
    */
   @action
   public async toggleFavorite(city: CityInfo) {
