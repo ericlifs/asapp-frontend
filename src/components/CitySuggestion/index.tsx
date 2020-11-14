@@ -8,6 +8,7 @@ import './index.scss';
 
 interface CitySuggestionProps {
   city: CityInfo;
+  rtl?: boolean;
 }
 
 const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProps): JSX.Element => {
@@ -17,6 +18,7 @@ const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProp
   const isFaved = useMemo(() => preferencesStore.preferredCities[props.city.geonameid], [preferencesStore.preferredCities, props.city]);
   const buttonText = useMemo((): string => (isFaved ? 'Remove' : 'Add'), [isFaved]);
   const buttonClass = useMemo((): string => (isFaved ? 'red' : ''), [isFaved]);
+  const positionClass = useMemo((): string => (props.rtl ? 'left' : ''), [props.rtl]);
 
   const isSubmittingCurrentCity = useMemo(
     (): boolean => preferencesStore.submittingCity === props.city.geonameid,
@@ -29,15 +31,15 @@ const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProp
 
   return (
     <div className="city-suggestion" key={props.city.geonameid}>
-      <div className="city-suggestion__row">
+      <div className={`city-suggestion__row ${positionClass}`}>
         <h2 className="city-suggestion__name">{props.city.name}</h2>
       </div>
-      <div className="city-suggestion__row">
+      <div className={`city-suggestion__row ${positionClass}`}>
         <h3 className="city-suggestion__country">{props.city.country}</h3>
         <h3 className="city-suggestion__subcountry">{props.city.subcountry}</h3>
       </div>
       <button
-        className={`city-suggestion__button ${buttonClass}`}
+        className={`city-suggestion__button ${buttonClass} ${positionClass}`}
         disabled={preferencesStore.isSubmitting}
         onClick={onButtonClicked}
       >

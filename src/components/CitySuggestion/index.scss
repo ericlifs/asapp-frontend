@@ -10,7 +10,14 @@
 
   &__row {
     display: flex;
-    padding-right: 84px;
+
+    &:not(.left) {
+      padding-right: 84px;
+    }
+
+    &.left {
+      padding-left: 87px;
+    }
   }
 
   &__subcountry {
@@ -27,7 +34,6 @@
 
   &__button {
     position: absolute;
-    right: 0;
     top: 50%;
     transform: translateY(-50%);
     background: #1dd1a1;
@@ -43,6 +49,14 @@
 
     &.red {
       background-color: #ee5253;
+    }
+
+    &:not(.left) {
+      right: 0;
+    }
+
+    &.left {
+      left: 0;
     }
 
     &:disabled {
