@@ -101,6 +101,23 @@ class PreferencesStore {
     }
   }
 
+  @action protected onFavoriteSuccessfullyToggled(city: CityInfo) {
+    this.favorites = getNewFavoritesState(this.favorites, city);
+    this.submitStatus = FetchStatus.Fetched;
+  }
+
+  @action clearCurrentError() {
+    this.submittingError = '';
+    this.submittingCity = undefined;
+  }
+
+  @action protected onFavoriteErrorToggled(error: Error) {
+    this.submittingError = error.message;
+    this.submitStatus = FetchStatus.Error;
+
+    this.timeoutId = setTimeout(() => this.clearCurrentError(), 5000);
+  }
+
   /**
    * Adds or removes city from favorites lists
    * @param {CityInfo} city - City info object which will be added/removed from favorites list
@@ -115,20 +132,13 @@ class PreferencesStore {
     this.submitStatus = FetchStatus.Fetching;
 
     try {
-      await api.patch<number>(`${API_CONFIG.ENDPOINTS.PREFERENCES}/${API_CONFIG.ENDPOINTS.CITIES}`, {
+      await api.patch(`${API_CONFIG.ENDPOINTS.PREFERENCES}/${API_CONFIG.ENDPOINTS.CITIES}`, {
         [city.geonameid]: !this.favorites[city.geonameid],
       });
 
-      this.favorites = getNewFavoritesState(this.favorites, city);
-      this.submitStatus = FetchStatus.Fetched;
-    } catch (err) {
-      this.submittingError = err.message;
-      this.submitStatus = FetchStatus.Error;
-
-      this.timeoutId = setTimeout(() => {
-        this.submittingError = '';
-        this.submittingCity = undefined;
-      }, 5000);
+      this.onFavoriteSuccessfullyToggled(city);
+    } catch (error) {
+      this.onFavoriteErrorToggled(error);
     }
   }
 }

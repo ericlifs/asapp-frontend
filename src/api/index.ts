@@ -20,19 +20,22 @@ class Api {
     return jsonRes as T;
   }
 
-  async patch<T>(endpoint: string, params: QueryParams): Promise<T> {
+  async patch(endpoint: string, params: QueryParams): Promise<number> {
     const res = await fetch(`${CONFIG.API_BASE_PATH}/${endpoint}`, {
       method: 'PATCH',
       body: JSON.stringify(params),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
     });
 
-    const jsonRes = await res.json();
-
     if (!res.ok) {
+      const jsonRes = await res.json();
       throw new Error(jsonRes.message);
     }
 
-    return jsonRes as T;
+    return res.status;
   }
 }
 
