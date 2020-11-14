@@ -39,15 +39,17 @@ class PreferencesStore {
    * @param {number[]} cities - Cities' ids whose information will be requested
    */
   protected async getFavoritesCitiesInformation(cities: number[]) {
-    const citiesPromisesSettled = await Promise.allSettled(
+    // I used a Promise.allSettled instead of a Promise.all because otherwise after facing the first error it would stop
+    // doing the remaining requests (Promise.allSettled does every request even if an error is thrown in the first request)
+    const citiesInformationById = await Promise.allSettled(
       cities.map((city: number) => api.get(`${API_CONFIG.ENDPOINTS.CITIES}/${city}`, {})),
     );
 
-    return citiesPromisesSettled.reduce((accum, cityResponse, index) => {
-      const cityId = cities[index];
+    return citiesInformationById.reduce((favorites, cityResponse, currentIndex) => {
+      const cityId = cities[currentIndex];
 
       return {
-        ...accum,
+        ...favorites,
         [cityId]: cityResponse.status === 'fulfilled' ? cityResponse.value : cityResponse.reason,
       };
     }, {});
@@ -62,9 +64,13 @@ class PreferencesStore {
     this.fetchStatus = FetchStatus.Fetching;
 
     try {
+      // I go through the local preferred cities information finding for the cities that got an error while
+      // trying to get the whole city information
       const citiesToFetch = Object.keys(this.favorites).reduce((accum: number[], currentCity) => {
         const cityId = Number(currentCity);
 
+        // If it's an instance of an Error object it's because there was an error while doing the GET
+        // request for getting the city information by id
         if (this.favorites[cityId] instanceof Error) {
           return [...accum, cityId];
         }
@@ -72,8 +78,10 @@ class PreferencesStore {
         return accum;
       }, []);
 
+      // I call the getFavoritesCitiesInformation function again but only with the cities that got an error
       const res = await this.getFavoritesCitiesInformation(citiesToFetch);
 
+      // I save the new information into store
       this.favorites = {
         ...this.favorites,
         ...res,
@@ -95,13 +103,15 @@ class PreferencesStore {
     this.fetchStatus = FetchStatus.Fetching;
 
     try {
+      // Gets the preferred cities IDs already selected by the user
       const { data } = await api.get<PreferredCitiesResponse>(
         `${API_CONFIG.ENDPOINTS.PREFERENCES}/${API_CONFIG.ENDPOINTS.CITIES}`,
         {},
       );
 
+      // Does a GET for each ID in order to get the city information and saves that preferred information locally within the store
+      // (in order to avoid doing more requests in the future)
       this.favorites = await this.getFavoritesCitiesInformation(data);
-
       this.fetchStatus = FetchStatus.Fetched;
     } catch (error) {
       this.fetchingError = error.message;
@@ -115,6 +125,8 @@ class PreferencesStore {
    */
   @action
   protected onFavoriteSuccessfullyToggled(city: CityInfo) {
+    // I get the new preferred list state by calling a utils function which based on the current state
+    // and a city, returns a new preferred list
     this.favorites = getNewFavoritesState(this.favorites, city);
     this.submitStatus = FetchStatus.Fetched;
     this.submittingCity = undefined;
@@ -158,12 +170,15 @@ class PreferencesStore {
     this.submitStatus = FetchStatus.Fetching;
 
     try {
+      // Performs a patch for toggling the city in the backend
       await api.patch(`${API_CONFIG.ENDPOINTS.PREFERENCES}/${API_CONFIG.ENDPOINTS.CITIES}`, {
         [city.geonameid]: !this.favorites[city.geonameid],
       });
 
+      // If the patch was succesfull I also save the store locally (in order to avoid doing a GET)
       this.onFavoriteSuccessfullyToggled(city);
     } catch (error) {
+      // There was an error while doing the patch, so I put the store into an error state
       this.onFavoriteErrorToggled(error);
     }
   }

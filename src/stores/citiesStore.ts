@@ -61,6 +61,7 @@ class CitiesStore {
     this.fetchStatus = FetchStatus.Fetching;
 
     try {
+      // I do a GET request to the backend with the provided filter and page/offset
       const response = await api.get<CitiesResponse>(API_CONFIG.ENDPOINTS.CITIES, {
         filter,
         offset: offset * LIMIT,
@@ -77,12 +78,11 @@ class CitiesStore {
   }
 
   /**
-   * Clears the previous filter state and sets the new filter within the store
+   * Clears the previous filter state information from the store
    */
   @action
-  protected resetFilter(filter: string): void {
+  protected resetFilter(): void {
     this.filteredCities = [];
-    this.currentFilter = filter;
     this.filteredCitiesPage = 0;
     this.filteredCitiesTotal = 0;
   }
@@ -94,14 +94,18 @@ class CitiesStore {
    */
   @action
   public async getCitiesByFilter(filter: string) {
+    // If the filter is different than the previous one I reset the filter information and save the new one
     if (filter !== this.currentFilter) {
-      this.resetFilter(filter);
+      this.resetFilter();
+      this.currentFilter = filter;
     }
 
+    // If the filter is not empty, I fetch the cities by the term and the current page for filtering mode
     if (filter) {
       const response = await this.fetchCitiesByTerm(filter, this.filteredCitiesPage);
 
       if (response) {
+        // I save the response data into store and increase the current page by one
         this.filteredCities = [...this.filteredCities, ...response.data];
         this.filteredCitiesTotal = response.total;
         this.filteredCitiesPage += 1;
@@ -115,9 +119,11 @@ class CitiesStore {
    */
   @action
   public async getAllCities() {
+    // I do a new GET cities request filtering by the empty filter and the current page for all cities mode
     const response = await this.fetchCitiesByTerm('', this.allCitiesPage);
 
     if (response) {
+      // I save the response data into store and increase the current page by one
       this.allCities = [...this.allCities, ...response.data];
       this.allCitiesTotal = response.total;
       this.allCitiesPage += 1;
@@ -129,10 +135,12 @@ class CitiesStore {
    */
   @action
   public getMoreCities() {
+    // If there is a filter, I should get more cities by filtering by that term
     if (this.isFilteringMode) {
       return this.getCitiesByFilter(this.currentFilter);
     }
 
+    // Otherwise I get more cities but without using any filter.--.,jhjmnb
     this.getAllCities();
   }
 }
