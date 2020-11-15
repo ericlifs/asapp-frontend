@@ -31,7 +31,15 @@ class PreferencesStore {
 
   @computed
   public get activePreferredCities() {
-    return Object.values(this.preferredCities).filter(Boolean);
+    return Object.keys(this.preferredCities).reduce((accum: PreferredCities, keyName: string) => {
+      const cityId = Number(keyName);
+
+      if (this.preferredCities[cityId]) {
+        accum[cityId] = this.preferredCities[cityId];
+      }
+
+      return accum;
+    }, {});
   }
 
   /**

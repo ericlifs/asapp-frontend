@@ -6,12 +6,12 @@ import { PreferencesStore } from 'stores';
 import { ErrorMessage, Loading } from 'ui';
 import ChevronUp from 'assets/up-chevron.png';
 import ChevronDown from 'assets/down-chevron.png';
+import { PreferredCities as PreferredCitiesType } from 'interfaces';
 import './index.scss';
-import { CityInfo } from 'interfaces';
 
 interface PreferredCitiesProps {
   heading: string;
-  preferredCities: (CityInfo | Error)[];
+  preferredCities: PreferredCitiesType;
   renderItem: (item: any, index: number) => JSX.Element;
 }
 
@@ -40,8 +40,12 @@ const PreferredCities: React.FC<PreferredCitiesProps> = (props: PreferredCitiesP
       );
     }
 
-    if (props.preferredCities.length > 0) {
-      return props.preferredCities.map((item: any, index: number) => props.renderItem(item, index));
+    if (Object.keys(props.preferredCities).length > 0) {
+      return Object.keys(props.preferredCities).map((keyName: string) => {
+        const cityId = Number(keyName);
+
+        return props.renderItem(props.preferredCities[cityId], cityId);
+      });
     }
 
     return <h2 className="preferred-cities__subtitle">Oops... you do not have preferred cities yet</h2>;
