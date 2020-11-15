@@ -3,13 +3,13 @@
 import { action, computed, observable } from 'mobx';
 import { createContext } from 'react';
 import { getNewPreferredCitiesState } from 'utils';
-import { CityInfo, PreferredCities, FetchStatus, PreferredCitiesResponse } from 'interfaces';
+import { CityInfo, PreferredCities, RequestStatus, PreferredCitiesResponse } from 'interfaces';
 import api, { API_CONFIG } from '../api';
 
 class PreferencesStore {
-  @observable public submitStatus = FetchStatus.Initial;
+  @observable public submitStatus = RequestStatus.Initial;
 
-  @observable public fetchStatus = FetchStatus.Initial;
+  @observable public fetchStatus = RequestStatus.Initial;
 
   @observable public preferredCities: PreferredCities = {};
 
@@ -22,11 +22,11 @@ class PreferencesStore {
   @observable protected timeoutId?: NodeJS.Timeout;
 
   @computed public get isFetching() {
-    return this.fetchStatus === FetchStatus.Fetching;
+    return this.fetchStatus === RequestStatus.Pending;
   }
 
   @computed public get isSubmitting() {
-    return this.submitStatus === FetchStatus.Fetching;
+    return this.submitStatus === RequestStatus.Pending;
   }
 
   @computed
@@ -61,7 +61,7 @@ class PreferencesStore {
    */
   @action
   public async retryFetchPreferredCitiesInformation() {
-    this.fetchStatus = FetchStatus.Fetching;
+    this.fetchStatus = RequestStatus.Pending;
 
     try {
       // I go through the local preferred cities information finding for the cities that got an error while
@@ -87,7 +87,7 @@ class PreferencesStore {
         ...res,
       };
 
-      this.fetchStatus = FetchStatus.Fetched;
+      this.fetchStatus = RequestStatus.Success;
     } catch (err) {
       console.log(err);
     }
@@ -100,7 +100,7 @@ class PreferencesStore {
   @action
   public async getPreferredCities(): Promise<void> {
     this.fetchingError = '';
-    this.fetchStatus = FetchStatus.Fetching;
+    this.fetchStatus = RequestStatus.Pending;
 
     try {
       // Gets the preferred cities IDs already selected by the user
@@ -112,10 +112,10 @@ class PreferencesStore {
       // Does a GET for each ID in order to get the city information and saves that preferred information locally within the store
       // (in order to avoid doing more requests in the future)
       this.preferredCities = await this.getPreferredCitiesInformation(data);
-      this.fetchStatus = FetchStatus.Fetched;
+      this.fetchStatus = RequestStatus.Success;
     } catch (error) {
       this.fetchingError = error.message;
-      this.fetchStatus = FetchStatus.Error;
+      this.fetchStatus = RequestStatus.Error;
     }
   }
 
@@ -129,7 +129,7 @@ class PreferencesStore {
     // I get the new preferred list state by calling a utils function which based on the current state
     // and a city, returns a new preferred list
     this.preferredCities = getNewPreferredCitiesState(this.preferredCities, city);
-    this.submitStatus = FetchStatus.Fetched;
+    this.submitStatus = RequestStatus.Success;
     this.submittingCity = undefined;
   }
 
@@ -151,7 +151,7 @@ class PreferencesStore {
   @action
   protected onPreferredCityErrorToggled(error: Error) {
     this.submittingError = error.message;
-    this.submitStatus = FetchStatus.Error;
+    this.submitStatus = RequestStatus.Error;
 
     this.clearCurrentErrorAfterFiveSeconds();
   }
@@ -169,7 +169,7 @@ class PreferencesStore {
 
     this.submittingError = '';
     this.submittingCity = city.geonameid;
-    this.submitStatus = FetchStatus.Fetching;
+    this.submitStatus = RequestStatus.Pending;
 
     try {
       // Performs a patch for toggling the city in the backend

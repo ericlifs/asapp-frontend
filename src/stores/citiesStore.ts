@@ -2,12 +2,12 @@ import { action, computed, observable } from 'mobx';
 import { createContext } from 'react';
 import api from '../api';
 import API_CONFIG from '../api/config';
-import { CitiesResponse, CityInfo, FetchStatus } from '../interfaces';
+import { CitiesResponse, CityInfo, RequestStatus } from '../interfaces';
 
 const LIMIT = 20;
 
 class CitiesStore {
-  @observable public fetchStatus = FetchStatus.Initial;
+  @observable public fetchStatus = RequestStatus.Initial;
 
   @observable public allCities: CityInfo[] = [];
 
@@ -38,7 +38,7 @@ class CitiesStore {
   }
 
   @computed public get isFetching() {
-    return this.fetchStatus === FetchStatus.Fetching;
+    return this.fetchStatus === RequestStatus.Pending;
   }
 
   @computed public get hasMoreCitiesToFetch() {
@@ -58,7 +58,7 @@ class CitiesStore {
   @action
   protected async fetchCitiesByTerm(filter = '', offset = 0): Promise<CitiesResponse | undefined> {
     this.error = '';
-    this.fetchStatus = FetchStatus.Fetching;
+    this.fetchStatus = RequestStatus.Pending;
 
     try {
       // I do a GET request to the backend with the provided filter and page/offset
@@ -68,12 +68,12 @@ class CitiesStore {
         limit: LIMIT,
       });
 
-      this.fetchStatus = FetchStatus.Fetched;
+      this.fetchStatus = RequestStatus.Success;
 
       return response;
     } catch (error) {
       this.error = error.message;
-      this.fetchStatus = FetchStatus.Error;
+      this.fetchStatus = RequestStatus.Error;
     }
   }
 
