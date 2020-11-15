@@ -29,7 +29,9 @@ function App() {
         <PreferredCities
           heading="Your preferred cities"
           preferredCities={preferencesStore.activePreferredCities}
-          renderItem={(item: CityInfo | Error) => <PreferredCityItem item={item} />}
+          renderItem={(item: CityInfo | Error, index: number) => (
+            <PreferredCityItem key={index} item={item} />
+          )}
         />
       </section>
       <section className="main-section">

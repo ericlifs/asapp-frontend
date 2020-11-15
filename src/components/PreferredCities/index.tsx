@@ -12,7 +12,7 @@ import { CityInfo } from 'interfaces';
 interface PreferredCitiesProps {
   heading: string;
   preferredCities: (CityInfo | Error)[];
-  renderItem: (item: any) => JSX.Element;
+  renderItem: (item: any, index: number) => JSX.Element;
 }
 
 const PreferredCities: React.FC<PreferredCitiesProps> = (props: PreferredCitiesProps) => {
@@ -41,7 +41,7 @@ const PreferredCities: React.FC<PreferredCitiesProps> = (props: PreferredCitiesP
     }
 
     if (props.preferredCities.length > 0) {
-      return props.preferredCities.map(props.renderItem);
+      return props.preferredCities.map((item: any, index: number) => props.renderItem(item, index));
     }
 
     return <h2 className="preferred-cities__subtitle">Oops... you do not have preferred cities yet</h2>;
