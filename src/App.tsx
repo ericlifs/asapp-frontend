@@ -28,7 +28,7 @@ function App() {
       <section className="leftbar-section">
         <PreferredCities
           heading="Your preferred cities"
-          preferredCities={preferencesStore.activePreferredCities}
+          preferredCities={preferencesStore.preferredCities}
           renderItem={(item: CityInfo | Error, cityId: number) => (
             <PreferredCityItem key={cityId} item={item} />
           )}

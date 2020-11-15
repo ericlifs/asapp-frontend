@@ -19,6 +19,8 @@ const PreferredCities: React.FC<PreferredCitiesProps> = (props: PreferredCitiesP
   const preferencesStore = useContext(PreferencesStore);
   const [opened, setOpened] = useState(false);
 
+  const preferredCitiesIds = useMemo(() => Object.keys(props.preferredCities), [props.preferredCities]);
+
   const toggleMobileMenu = () => {
     setOpened((prevOpened) => !prevOpened);
   };
@@ -40,8 +42,8 @@ const PreferredCities: React.FC<PreferredCitiesProps> = (props: PreferredCitiesP
       );
     }
 
-    if (Object.keys(props.preferredCities).length > 0) {
-      return Object.keys(props.preferredCities).map((keyName: string) => {
+    if (preferredCitiesIds.length > 0) {
+      return preferredCitiesIds.map((keyName: string) => {
         const cityId = Number(keyName);
 
         return props.renderItem(props.preferredCities[cityId], cityId);

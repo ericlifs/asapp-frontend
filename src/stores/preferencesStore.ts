@@ -29,19 +29,6 @@ class PreferencesStore {
     return this.submitStatus === RequestStatus.Pending;
   }
 
-  @computed
-  public get activePreferredCities() {
-    return Object.keys(this.preferredCities).reduce((accum: PreferredCities, keyName: string) => {
-      const cityId = Number(keyName);
-
-      if (this.preferredCities[cityId]) {
-        accum[cityId] = this.preferredCities[cityId];
-      }
-
-      return accum;
-    }, {});
-  }
-
   /**
    * Takes an array of cities ids and foreach one it requests it information
    * @param {number[]} cities - Cities' ids whose information will be requested
