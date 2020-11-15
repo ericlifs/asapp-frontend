@@ -1,13 +1,15 @@
+/* eslint-disable no-unused-vars */
 import { CityInfo, PreferredCities } from 'interfaces';
+import omit from 'lodash.omit';
 
-const getNewPreferredCitiesState = (preferredCities: PreferredCities, city: CityInfo) => {
-  const newValue = {
-    [city.geonameid]: preferredCities[city.geonameid] ? undefined : city,
-  };
+const getNewPreferredCitiesState = (preferredCities: PreferredCities, city: CityInfo): PreferredCities => {
+  if (preferredCities[city.geonameid]) {
+    return omit(preferredCities, [city.geonameid]);
+  }
 
   return {
     ...preferredCities,
-    ...newValue,
+    [city.geonameid.toString()]: city,
   };
 };
 

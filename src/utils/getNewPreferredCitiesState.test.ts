@@ -28,9 +28,7 @@ describe('get new preferred cities state based on the existing state and a city'
       10: argentina,
     };
 
-    expect(getNewPreferredCitiesState(existingState, argentina)).toStrictEqual({
-      10: undefined,
-    });
+    expect(getNewPreferredCitiesState(existingState, argentina)).toStrictEqual({});
   });
 
   test('remove city from preferred cities object with more than one city', () => {
@@ -40,7 +38,6 @@ describe('get new preferred cities state based on the existing state and a city'
     };
 
     expect(getNewPreferredCitiesState(existingState, argentina)).toStrictEqual({
-      10: undefined,
       11: brazil,
     });
   });
