@@ -4,20 +4,34 @@
   flex-direction: column;
   position: relative;
 
+  &.left {
+    .city-suggestion__row {
+      padding-left: 87px;
+      justify-content: flex-end;
+    }
+
+    .city-suggestion__button {
+      left: 0;
+    }
+  }
+
+  &:not(.left) {
+    .city-suggestion__row {
+      padding-right: 84px;
+      justify-content: flex-start;
+    }
+
+    .city-suggestion__button {
+      right: 0;
+    }
+  }
+
   &:not(:last-child) {
     margin-bottom: 20px;
   }
 
   &__row {
     display: flex;
-
-    &:not(.left) {
-      padding-right: 84px;
-    }
-
-    &.left {
-      padding-left: 87px;
-    }
   }
 
   &__subcountry {
@@ -49,14 +63,6 @@
 
     &.red {
       background-color: #ee5253;
-    }
-
-    &:not(.left) {
-      right: 0;
-    }
-
-    &.left {
-      left: 0;
     }
 
     &:disabled {
