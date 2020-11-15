@@ -19,6 +19,10 @@ const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProp
   const buttonText = useMemo((): string => (isFaved ? 'Remove' : 'Add'), [isFaved]);
   const buttonClass = useMemo((): string => (isFaved ? 'red' : ''), [isFaved]);
   const positionClass = useMemo((): string => (props.rtl ? 'left' : ''), [props.rtl]);
+  const showButton = useMemo(
+    (): boolean => preferencesStore.fetchingError === '' && !preferencesStore.isFetching,
+    [preferencesStore.fetchingError, preferencesStore.isFetching],
+  );
 
   const isSubmittingCurrentCity = useMemo(
     (): boolean => preferencesStore.submittingCity === props.city.geonameid,
@@ -38,13 +42,15 @@ const CitySuggestion: React.FC<CitySuggestionProps> = (props: CitySuggestionProp
         <h3 className="city-suggestion__country">{props.city.country}</h3>
         <h3 className="city-suggestion__subcountry">{props.city.subcountry}</h3>
       </div>
-      <button
-        className={`city-suggestion__button ${buttonClass} ${positionClass}`}
-        disabled={preferencesStore.isSubmitting}
-        onClick={onButtonClicked}
-      >
-        {buttonText}
-      </button>
+      {showButton && (
+        <button
+          className={`city-suggestion__button ${buttonClass} ${positionClass}`}
+          disabled={preferencesStore.isSubmitting}
+          onClick={onButtonClicked}
+        >
+          {buttonText}
+        </button>
+      )}
       <AnimatedSuggestion shown={isSubmittingCurrentCity}>
         <>
           {preferencesStore.isSubmitting && <Loading />}
